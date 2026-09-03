@@ -3,225 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tablero de Aulas UNISA</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        unisaBlue: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            500: '#3b82f6',
-                            700: '#1d4ed8',
-                            900: '#1e3a8a',
-                        },
-                        unisaGray: '#f8fafc'
-                    }
+    <title>Tablero de Salones - UNISA 2026 (Bloque 1)</title>
+    <style>
+        :root {
+            --primary: #003366; /* Azul institucional sugerido */
+            --secondary: #eef2f5;
+            --text-dark: #333;
+            --border: #ccc;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background-color: var(--primary);
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        tr:nth-child(even) { background-color: var(--secondary); }
+        .highlight { font-weight: bold; color: var(--primary); }
+        .note {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff3cd;
+            border-left: 5px solid #ffeeba;
+            font-size: 14px;
+        }
+        .tag-iespro { color: #856404; font-weight: bold; }
+        .tag-free { color: #155724; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Matriz de Salones Sábados - Bloque 1 (Septiembre - Octubre)</h1>
+    
+    <div class="controls">
+        <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Buscar por profesor, grupo, materia o aula...">
+    </div>
+
+    <table id="salonesTable">
+        <thead>
+            <tr>
+                <th>Aula</th>
+                <th>Capacidad</th>
+                <th>09:00 - 11:00</th>
+                <th>11:00 - 13:00</th>
+                <th>13:00 - 15:00</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="highlight">Aula Sistemas</td>
+                <td>8</td>
+                <td>[LAE26C] ING0101 - Inglés Básico Inicial ESL (Karla Berenice López González)</td>
+                <td>[ISC25B] ISC0417 - Ecuaciones diferenciales y series (Karla Berenice López González)</td>
+                <td>[LAE26A, LAE26B] LAE0313 - Contabilidad Financiera (Juan Pablo Gómez Ruiz)</td>
+            </tr>
+            <tr>
+                <td class="highlight">Montessori</td>
+                <td>14</td>
+                <td>[ISC25B] ING0404 - Enseñanza de la segunda lengua en el idioma inglés (Samuel Guadalupe Pérez Urquín)</td>
+                <td>[LAE25A, LAE25B] LAE0522 - Administración Estratégica (Karime Esquivel Herrejón)</td>
+                <td>[ISC25A, LAE25A, LAE25B] ING0505 - Conversacional ESL (Samuel Guadalupe Pérez Urquín)</td>
+            </tr>
+            <tr>
+                <td class="highlight">Piaget</td>
+                <td>6</td>
+                <td>[LAE26A, LAE26B] LAE0312 - Presupuestos (Alejandra Estefanía Guzmán Gutiérrez)</td>
+                <td>[ISC24A, ISC24B] ISC0945 - Gestión estratégica de proyectos (Alejandra Estefanía Guzmán Gutiérrez)</td>
+                <td>[ISC24A, ISC24B] ISC0941 - Desarrollo de aplicaciones móviles (Luis Manuel Lescieur Santiago)</td>
+            </tr>
+            <tr>
+                <td class="highlight">Salón Paulo Freire</td>
+                <td>12</td>
+                <td>[LAE25A, LAE25B] LAE0521 - Logística y cadena de suministro (Juan Carlos Culej Pérez)</td>
+                <td>[LAE26A, LAE26B] ING0303 - Inglés pre-intermedio ESL (Samuel Guadalupe Pérez Urquín)</td>
+                <td>[LAE26C] LAE0102 - Entorno socioeconómico y político de México (Juan Carlos Culej Pérez)</td>
+            </tr>
+            <tr>
+                <td class="highlight">Salón Vigotsky</td>
+                <td>N/A</td>
+                <td class="tag-iespro">IESPRO</td>
+                <td class="tag-iespro">IESPRO</td>
+                <td class="tag-iespro">IESPRO</td>
+            </tr>
+            <tr>
+                <td class="highlight">Salón B. F. Skinner</td>
+                <td>10</td>
+                <td>[ISC25A] ISC0524 - Introducción a los lenguajes de programación (Luis Manuel Lescieur Santiago)</td>
+                <td>[ISC25A] ISC0525 - Gestión de equipos y liderazgo (Hugo Alberto Ozuna Moreno)</td>
+                <td>[ISC25B] ISC0418 - Probabilidad y estadística (Hugo Alberto Ozuna Moreno)</td>
+            </tr>
+            <tr>
+                <td class="highlight">Salón Jerome Bruner</td>
+                <td>12</td>
+                <td class="tag-iespro">IESPRO</td>
+                <td class="tag-iespro">IESPRO</td>
+                <td class="tag-iespro">IESPRO</td>
+            </tr>
+            <tr>
+                <td class="highlight">Salón John Dewey</td>
+                <td>8</td>
+                <td>[ISC24A, ISC24B] ISC0942 - Inteligencia Artificial (Joaquín Román Vázquez Zúñiga)</td>
+                <td>[LAE26C] LAE0101 - Introducción a la empresa (Juan Pablo Gómez Ruiz)</td>
+                <td class="tag-free">Disponible</td>
+            </tr>
+            <tr>
+                <td class="highlight">Laboratorio 02</td>
+                <td>N/A</td>
+                <td class="tag-free">Disponible</td>
+                <td class="tag-free">Disponible</td>
+                <td class="tag-free">Disponible</td>
+            </tr>
+            <tr>
+                <td class="highlight">Carls Rogers</td>
+                <td>2</td>
+                <td>[LAE24B] LAE0731 - Administración de la Calidad (Juan Pablo Gómez Ruiz)</td>
+                <td>[LAE24B] LAE0732 - Administración financiera (Juan Carlos Culej Pérez)</td>
+                <td>[LAE24B] LAE0734 - Marketing digital (Karime Esquivel Herrejón)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="note">
+        <strong>Nota Complementaria (Modalidad Asíncrona):</strong><br>
+        [LAE24B, ISC24C] ISC0525 – Gestión de equipos y liderazgo (Hugo Alberto Ozuna Moreno) opera 24/7 en Campus Virtual.
+    </div>
+</div>
+
+<script>
+function filterTable() {
+    var input, filter, table, tr, td, i, j, txtValue;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("salonesTable");
+    tr = table.getElementsByTagName("tr");
+
+    for (i = 1; i < tr.length; i++) {
+        tr[i].style.display = "none";
+        td = tr[i].getElementsByTagName("td");
+        for (j = 0; j < td.length; j++) {
+            if (td[j]) {
+                txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                    break;
                 }
             }
         }
-    </script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f1f5f9;
-        }
-        .table-container {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-    </style>
-</head>
-<body class="p-6 md:p-10">
+    }
+}
+</script>
 
-    <div class="max-w-7xl mx-auto">
-        <header class="mb-8 bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-                <h1 class="text-3xl font-bold text-unisaBlue-900 mb-1">UNISA</h1>
-                <p class="text-sm text-gray-500 font-medium">Panel de Coordinación Académica • Matriz de Salones</p>
-            </div>
-            
-            <div class="w-full md:w-72">
-                <div class="relative">
-                    <input type="text" id="searchInput" placeholder="Buscar docente, materia o aula..." 
-                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-unisaBlue-500 focus:border-transparent transition-shadow text-sm">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <div class="bg-white rounded-xl overflow-hidden table-container border border-gray-200">
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-gray-700" id="matrixTable">
-                    <thead class="text-xs text-unisaBlue-900 uppercase bg-unisaBlue-50 border-b border-unisaBlue-100">
-                        <tr>
-                            <th scope="col" class="px-6 py-4 font-semibold w-1/5">Aula</th>
-                            <th scope="col" class="px-6 py-4 font-semibold w-1/4">09:00 - 11:00</th>
-                            <th scope="col" class="px-6 py-4 font-semibold w-1/4">11:00 - 13:00</th>
-                            <th scope="col" class="px-6 py-4 font-semibold w-1/4">13:00 - 15:00</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <!-- Las filas se insertarán aquí dinámicamente -->
-                    </tbody>
-                </table>
-            </div>
-            
-            <div id="noResults" class="hidden p-8 text-center text-gray-500">
-                <svg class="mx-auto h-12 w-12 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p>No se encontraron coincidencias para tu búsqueda.</p>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const matrixData = [
-            {
-                aula: "Aula Sistemas",
-                h09: "ING0101 – Inglés Básico Inicial ESL<br><span class='text-xs text-gray-500 font-medium'>(Karla Berenice López González)</span>",
-                h11: "ISC0417 – Ecuaciones diferenciales y series<br><span class='text-xs text-gray-500 font-medium'>(Karla Berenice López González)1</span>",
-                h13: "LAE0313 – Contabilidad Financiera<br><span class='text-xs text-gray-500 font-medium'>(Juan Pablo Gómez Ruiz)</span>"
-            },
-            {
-                aula: "Montessori",
-                h09: "ING0404 – Enseñanza de la segunda lengua en el idioma inglés<br><span class='text-xs text-gray-500 font-medium'>(Samuel Guadalupe Pérez Urquín)</span>",
-                h11: "LAE0522 – Administración Estratégica<br><span class='text-xs text-gray-500 font-medium'>(Karime Esquivel Herrejón)1</span>",
-                h13: "ISC0521 – Conversacional ESL<br><span class='text-xs text-gray-500 font-medium'>(Samuel Guadalupe Pérez Urquín)</span>"
-            },
-            {
-                aula: "Piaget",
-                h09: "LAE0312 – Presupuestos<br><span class='text-xs text-gray-500 font-medium'>(Alejandra Estefanía Guzmán Gutiérrez)</span>",
-                h11: "LAE0101 – Introducción a la empresa<br><span class='text-xs text-gray-500 font-medium'>(Juan Pablo Gómez Ruiz)1</span>",
-                h13: "ISC0941 – Desarrollo de aplicaciones móviles<br><span class='text-xs text-gray-500 font-medium'>(Luis Manuel Lescieur Santiago)</span>"
-            },
-            {
-                aula: "Salón Paulo Freire",
-                h09: "LAE0521 – Logística y cadena de suministro<br><span class='text-xs text-gray-500 font-medium'>(Juan Carlos Culej Pérez)</span>",
-                h11: "ING0303 - Inglés pre-intermedio ESL",
-                h13: "LAE0102 – Entorno socioeconómico y político de México<br><span class='text-xs text-gray-500 font-medium'>(Juan Carlos Culej Pérez)</span>"
-            },
-            {
-                aula: "Salón Vigotsky",
-                h09: "IESPRO",
-                h11: "IESPRO",
-                h13: "IESPRO"
-            },
-            {
-                aula: "Salón B. F. Skinner",
-                h09: "ISC0524 – Introducción a los lenguajes de programación<br><span class='text-xs text-gray-500 font-medium'>(Luis Manuel Lescieur Santiago)</span>",
-                h11: "ISC0521 – Sistemas operativos<br><span class='text-xs text-gray-500 font-medium'>(Carlos Abraham López González)</span>",
-                h13: "ISC0521 – Microprocesadores<br><span class='text-xs text-gray-500 font-medium'>(Carlos Abraham López González)</span>"
-            },
-            {
-                aula: "Salón Jerome Bruner",
-                h09: "IESPRO",
-                h11: "IESPRO",
-                h13: "IESPRO"
-            },
-            {
-                aula: "Salón John Dewey",
-                h09: "ISC0942 – Inteligencia Artificial<br><span class='text-xs text-gray-500 font-medium'>(Joaquín Román Vázquez Zúñiga)</span>",
-                h11: "ISC0945 – Gestión estratégica de proyectos<br><span class='text-xs text-gray-500 font-medium'>(Alejandra Estefanía Guzmán Gutiérrez)1</span>",
-                h13: "Disponible"
-            },
-            {
-                aula: "Laboratorio 02",
-                h09: "Disponible",
-                h11: "Disponible",
-                h13: "Disponible"
-            },
-            {
-                aula: "Carls Rogers",
-                h09: "LAE0731 – Administración de la Calidad<br><span class='text-xs text-gray-500 font-medium'>(Juan Pablo Gómez Ruiz)</span>",
-                h11: "LAE0732 – Administración financiera<br><span class='text-xs text-gray-500 font-medium'>(Juan Carlos Culej Pérez)1</span>",
-                h13: "LAE0734 – Marketing digital<br><span class='text-xs text-gray-500 font-medium'>(Karime Esquivel Herrejón)</span>"
-            }
-        ];
-
-        const tbody = document.getElementById('tableBody');
-        const searchInput = document.getElementById('searchInput');
-        const noResults = document.getElementById('noResults');
-
-        function renderTable(data) {
-            tbody.innerHTML = '';
-            
-            if (data.length === 0) {
-                noResults.classList.remove('hidden');
-                tbody.parentElement.classList.add('hidden');
-                return;
-            }
-
-            noResults.classList.add('hidden');
-            tbody.parentElement.classList.remove('hidden');
-
-            data.forEach((row, index) => {
-                const tr = document.createElement('tr');
-                const rowClass = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
-                tr.className = `${rowClass} border-b border-gray-100 hover:bg-unisaBlue-50 transition-colors`;
-                
-                // Limpieza visual y formato especial para 'IESPRO' y 'Disponible'
-                const formatCell = (content) => {
-                    if (content === "-" || !content) return '<span class="text-gray-300">-</span>';
-                    if (content === "IESPRO") return '<span class="inline-block px-3 py-1 bg-purple-100 text-purple-700 rounded-md font-semibold text-xs border border-purple-200">IESPRO</span>';
-                    if (content === "Disponible") return '<span class="inline-block px-3 py-1 bg-green-50 text-green-600 rounded-md font-medium text-xs border border-green-200 shadow-sm border-dashed">Disponible</span>';
-                    return content;
-                };
-
-                const contentH09 = formatCell(row.h09);
-                const contentH11 = formatCell(row.h11);
-                const contentH13 = formatCell(row.h13);
-
-                // Asignar color de inicial según el aula
-                const getInitialsColor = (aula) => {
-                    const colors = ['bg-blue-100 text-blue-700', 'bg-indigo-100 text-indigo-700', 'bg-sky-100 text-sky-700', 'bg-cyan-100 text-cyan-700'];
-                    // un pequeño hash para que el color sea consistente
-                    const sum = aula.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-                    return colors[sum % colors.length];
-                };
-
-                tr.innerHTML = `
-                    <td class="px-6 py-4 font-semibold text-gray-800 whitespace-nowrap">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-lg ${getInitialsColor(row.aula)} flex items-center justify-center font-bold text-sm shadow-sm border border-white/50">
-                                ${row.aula.charAt(0).toUpperCase()}
-                            </div>
-                            <span>${row.aula}</span>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 leading-relaxed">${contentH09}</td>
-                    <td class="px-6 py-4 leading-relaxed">${contentH11}</td>
-                    <td class="px-6 py-4 leading-relaxed">${contentH13}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            
-            const filteredData = matrixData.filter(item => {
-                const searchString = `
-                    ${item.aula} 
-                    ${item.h09} 
-                    ${item.h11} 
-                    ${item.h13}
-                `.toLowerCase();
-                
-                return searchString.includes(searchTerm);
-            });
-            
-            renderTable(filteredData);
-        });
-
-        // Inicializar tabla
-        renderTable(matrixData);
-    </script>
 </body>
 </html>
