@@ -109,18 +109,19 @@
     </div>
 
     <script>
-        // Datos centralizados de la matriz para facilitar su mantenimiento
+        // Datos centralizados de la matriz actualizados
         const scheduleData = [
             { room: 'Aula Sistemas', capacity: '8',  b1: '[LAE26C] ING0101 - Inglés Básico Inicial ESL (Karla Berenice López González)', b2: '[ISC25B] ISC0417 - Ecuaciones diferenciales y series (Karla Berenice López González)', b3: '[LAE26A, LAE26B] LAE0313 - Contabilidad Financiera (Juan Pablo Gómez Ruiz)' },
             { room: 'Montessori',    capacity: '14', b1: '[ISC25B] ING0404 - Enseñanza de la segunda lengua en el idioma inglés (Samuel Guadalupe Pérez Urquín)', b2: '[LAE25A, LAE25B] LAE0522 - Administración Estratégica (Karime Esquivel Herrejón)', b3: '[ISC25A, LAE25A, LAE25B] ING0505 - Conversacional ESL (Samuel Guadalupe Pérez Urquín)' },
             { room: 'Piaget',        capacity: '6',  b1: '[LAE26A, LAE26B] LAE0312 - Presupuestos (Alejandra Estefanía Guzmán Gutiérrez)', b2: '[ISC24A, ISC24B] ISC0945 - Gestión estratégica de proyectos (Alejandra Estefanía Guzmán Gutiérrez)', b3: '[ISC24A, ISC24B] ISC0941 - Desarrollo de aplicaciones móviles (Luis Manuel Lescieur Santiago)' },
             { room: 'Salón Paulo Freire', capacity: '12', b1: '[LAE25A, LAE25B] LAE0521 - Logística y cadena de suministro (Juan Carlos Culej Pérez)', b2: '[LAE26A, LAE26B] ING0303 - Inglés pre-intermedio ESL (Samuel Guadalupe Pérez Urquín)', b3: '[LAE26C] LAE0102 - Entorno socioeconómico y político de México (Juan Carlos Culej Pérez)' },
             { room: 'Salón Vigotsky',capacity: 'N/A', b1: 'IESPRO', b2: 'IESPRO', b3: 'IESPRO' },
-            { room: 'Salón B. F. Skinner',capacity: '10', b1: '[ISC25A] ISC0524 - Introducción a los lenguajes de programación (Luis Manuel Lescieur Santiago)', b2: '[ISC25A] ISC0525 - Gestión de equipos y liderazgo (Hugo Alberto Ozuna Moreno)', b3: '[ISC25B] ISC0418 - Probabilidad y estadística (Hugo Alberto Ozuna Moreno)' },
-            { room: 'Salón Jerome Bruner',capacity: '12', b1: 'IESPRO', b2: 'IESPRO', b3: 'IESPRO' },
-            { room: 'Salón John Dewey', capacity: '8',  b1: '[ISC24A, ISC24B] ISC0942 - Inteligencia Artificial (Joaquín Román Vázquez Zúñiga)', b2: '[LAE26C] LAE0101 - Introducción a la empresa (Juan Pablo Gómez Ruiz)', b3: 'Disponible' },
+            { room: 'Salón B. F. Skinner',capacity: '10', b1: 'Disponible', b2: '[ISC25A] ISC0525 - Gestión de equipos y liderazgo (Hugo Alberto Ozuna Moreno)', b3: '[ISC25B] ISC0418 - Probabilidad y estadística (Hugo Alberto Ozuna Moreno)' },
+            { room: 'Salón Jerome Bruner',capacity: '12', b1: '[ISC25A] ISC0524 - Introducción a los lenguajes de programación (Luis Manuel Lescieur Santiago)', b2: '[LAE26C] LAE0101 - Introducción a la empresa (Juan Pablo Gómez Ruiz)', b3: 'Disponible' },
+            { room: 'Salón John Dewey', capacity: '8',  b1: '[ISC24A, ISC24B] ISC0942 - Inteligencia Artificial (Joaquín Román Vázquez Zúñiga)', b2: 'Disponible', b3: 'Disponible' },
             { room: 'Laboratorio 02', capacity: 'N/A', b1: 'Disponible', b2: 'Disponible', b3: 'Disponible' },
-            { room: 'Carls Rogers',  capacity: '2',  b1: '[LAE24B] LAE0731 - Administración de la Calidad (Juan Pablo Gómez Ruiz)', b2: '[LAE24B] LAE0732 - Administración financiera (Juan Carlos Culej Pérez)', b3: '[LAE24B] LAE0734 - Marketing digital (Karime Esquivel Herrejón)' }
+            { room: 'Carls Rogers',  capacity: '2',  b1: '[LAE24B] LAE0731 - Administración de la Calidad (Juan Pablo Gómez Ruiz)', b2: '[LAE24B] LAE0732 - Administración financiera (Juan Carlos Culej Pérez)', b3: '[LAE24B] LAE0734 - Marketing digital (Karime Esquivel Herrejón)' },
+            { room: 'David Ausibel', capacity: '12', b1: 'IESPRO', b2: 'IESPRO', b3: 'IESPRO' }
         ];
 
         function formatCellContent(content) {
@@ -133,10 +134,11 @@
 
             let html = content;
 
-            // 1. Extraer y formatear grupos ej: [LAE26A, LAE26B]
+            // 1. Extraer y formatear grupos ej: [LAE26A, LAE26B] o [LAE26A - LAE26B]
             const groupRegex = /\[(.*?)\]/g;
             html = html.replace(groupRegex, (match, groupsStr) => {
-                const groups = groupsStr.split(',').map(g => g.trim());
+                // Separar por coma o por guion medio
+                const groups = groupsStr.split(/,| - /).map(g => g.trim());
                 const badges = groups.map(g => {
                     let colorClass = 'bg-gray-100 text-gray-800 border-gray-200'; // Default
                     if (g.startsWith('LAE')) colorClass = 'bg-blue-100 text-blue-800 border-blue-200';
@@ -156,11 +158,9 @@
                         </div>`;
             });
 
-            // 3. Resaltar la materia (lo que queda fuera de [] y ())
-            // Esto es un poco rudimentario pero funcional para el formato dado
+            // 3. Resaltar la materia
             html = html.replace(/(<\/div>|^)(.*?)(<div|$)/g, (match, p1, text, p3) => {
                 let trimmed = text.trim();
-                // Si el texto parece ser una clave de materia + nombre (ej. ING0101 - Inglés)
                 if (trimmed && trimmed !== '-' && !trimmed.startsWith('<')) {
                      return `${p1}<div class="text-sm font-semibold text-slate-700 leading-snug my-0.5">${trimmed}</div>${p3}`;
                 }
@@ -179,7 +179,6 @@
                 const tr = document.createElement('tr');
                 tr.className = `hover:bg-blue-50/50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`;
                 
-                // Atributo data-search para facilitar la búsqueda en texto plano
                 const searchText = `${row.room} ${row.b1} ${row.b2} ${row.b3}`.toLowerCase();
                 tr.setAttribute('data-search', searchText);
 
