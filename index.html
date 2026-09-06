@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tablero Académico - Sábados UNISA 2026</title>
-    <!-- Tailwind CSS para el diseño -->
+    <title>Tablero Académico - UNISA 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- PapaParse para leer Google Sheets automáticamente -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -18,75 +16,71 @@
     </style>
 </head>
 <body class="text-slate-800 antialiased p-4 md:p-8">
-
     <div class="max-w-7xl mx-auto">
-        <!-- Encabezado Institucional -->
+        
         <header class="bg-white rounded-t-xl p-6 border-b-4 border-blue-900 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-blue-900 tracking-tight">Matriz de Aulas - Sábados (Presencial)</h1>
-                <p class="text-slate-500 font-medium text-sm mt-1">Bloque 1 (2026) • Centro de Estudios Universitarios San Agustín</p>
+                <h1 class="text-2xl font-bold text-blue-900 tracking-tight">Matriz Operativa de Aulas</h1>
+                <p class="text-slate-500 font-medium text-sm mt-1">Centro de Estudios Universitarios San Agustín</p>
             </div>
             <div id="statusBadge" class="bg-amber-50 text-amber-800 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 border border-amber-200">
                 <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                Sincronizando con nube...
+                Sincronizando...
             </div>
         </header>
 
-        <!-- Buscador y Leyenda -->
-        <section class="bg-white p-4 border-b border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="relative w-full sm:w-96">
-                <input type="text" id="searchInput" class="block w-full pl-4 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-shadow" placeholder="Buscar docente, grupo o materia...">
+        <section class="bg-white px-4 pt-4 border-b border-slate-200 shadow-sm flex flex-col gap-4">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="relative w-full sm:w-96">
+                    <input type="text" id="searchInput" class="block w-full pl-4 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-shadow" placeholder="Buscar docente, grupo o materia...">
+                </div>
+                <div class="flex gap-3 text-xs font-medium text-slate-600 flex-wrap">
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-100 border border-blue-300"></span> LAE</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-emerald-100 border border-emerald-300"></span> ISC</span>
+                </div>
             </div>
-            <div class="flex gap-3 text-xs font-medium text-slate-600 flex-wrap">
-                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-100 border border-blue-300"></span> LAE</span>
-                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-emerald-100 border border-emerald-300"></span> ISC</span>
-                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-amber-100 border border-amber-300"></span> IESPRO</span>
+            
+            <!-- Pestañas de Modalidad -->
+            <div class="flex gap-4 overflow-x-auto" id="tabContainer">
+                <button data-target="sabados" class="tab-btn active py-3 px-4 border-b-2 font-medium text-sm transition-colors border-blue-600 text-blue-700 whitespace-nowrap">Sábados (Presencial)</button>
+                <button data-target="hibrido" class="tab-btn py-3 px-4 border-b-2 border-transparent font-medium text-sm text-slate-500 hover:text-slate-700 whitespace-nowrap">Miércoles (Híbrido)</button>
+                <button data-target="remoto" class="tab-btn py-3 px-4 border-b-2 border-transparent font-medium text-sm text-slate-500 hover:text-slate-700 whitespace-nowrap">100% Remoto</button>
             </div>
         </section>
 
-        <!-- Tabla -->
         <main class="bg-white rounded-b-xl shadow-sm border border-slate-200 overflow-hidden relative">
             <div class="table-container overflow-x-auto w-full">
-                <table class="w-full text-left border-collapse" id="salonesTable">
-                    <thead>
-                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider text-xs font-semibold">
-                            <th class="p-4 min-w-[150px] sticky left-0 bg-slate-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10">Aula</th>
-                            <th class="p-4 min-w-[80px] text-center">Cupo</th>
-                            <th class="p-4 min-w-[280px]">09:00 - 11:00</th>
-                            <th class="p-4 min-w-[280px]">11:00 - 13:00</th>
-                            <th class="p-4 min-w-[280px]">13:00 - 15:00</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody" class="divide-y divide-slate-100 text-sm">
-                        <!-- Filas inyectadas por JS -->
-                    </tbody>
+                <table class="w-full text-left border-collapse" id="mainTable">
+                    <thead id="tableHead"></thead>
+                    <tbody id="tableBody" class="divide-y divide-slate-100 text-sm"></tbody>
                 </table>
             </div>
         </main>
         
-        <!-- Recordatorio Operativo -->
         <footer class="mt-6 bg-blue-50 border-l-4 border-blue-600 p-4 rounded-r-lg shadow-sm text-sm text-blue-800">
-            <strong>Lineamiento Operativo:</strong> Si el docente asiste pero el grupo no se presenta (causas ajenas), la sesión se contabiliza como impartida. El docente deberá subir evidencias y foros al <em>Campus Virtual</em>. Aulas de Planta Baja reservadas por accesibilidad.
+            <strong>Lineamiento Institucional:</strong> Si una sesión no cuenta con quórum estudiantil por causas externas, el docente tiene garantizado su honorario al migrar las evidencias y foros de participación al <em>Campus Virtual</em>.
         </footer>
     </div>
 
     <script>
-        // URL de tu Google Sheet (Publicado en la web como CSV)
-        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQTu4ojCpcx6nXbkKRjiatZ_0oDCZ4ChrdL7OBSKq8q3tK0XTgFc4844OY3v7w5dNnACNOiO8pl57e4/pub?output=csv";
+        // CONFIGURACIÓN DE ENLACES (Reemplaza estos enlaces con los tuyos, nota el &gid=)
+        const URLS = {
+            sabados: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQTu4ojCpcx6nXbkKRjiatZ_0oDCZ4ChrdL7OBSKq8q3tK0XTgFc4844OY3v7w5dNnACNOiO8pl57e4/pub?output=csv", 
+            hibrido: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQTu4ojCpcx6nXbkKRjiatZ_0oDCZ4ChrdL7OBSKq8q3tK0XTgFc4844OY3v7w5dNnACNOiO8pl57e4/pub?output=csv&gid=415025915", 
+            remoto: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQTu4ojCpcx6nXbkKRjiatZ_0oDCZ4ChrdL7OBSKq8q3tK0XTgFc4844OY3v7w5dNnACNOiO8pl57e4/pub?output=csv&gid=1020771134"
+        };
 
-        // Formateador visual
+        let currentData = [];
+        let currentFields = [];
+
         function formatCellContent(content) {
             if (!content || content.trim() === '') return '<span class="text-slate-300">-</span>';
             let txt = content.trim();
 
-            if (txt === 'Disponible') {
-                return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200 shadow-sm">Libre / Disponible</span>`;
-            }
-            if (txt === 'IESPRO') {
-                return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200 shadow-sm">Uso Exclusivo IESPRO</span>`;
-            }
+            if (txt === 'Disponible') return `<span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">Libre / Disponible</span>`;
+            if (txt === 'IESPRO') return `<span class="inline-flex px-2.5 py-0.5 rounded-md text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">IESPRO</span>`;
 
-            // Detectar Grupos ej. [LAE26C] o [LAE25A - LAE25B]
+            // Formato de Grupos Ej. [ISC25A_Virtual] o [LAE26C]
             txt = txt.replace(/\[(.*?)\]/g, (match, groupsStr) => {
                 const groups = groupsStr.split(/,| - /).map(g => g.trim());
                 const badges = groups.map(g => {
@@ -98,10 +92,10 @@
                 return `<div class="mb-1">${badges}</div>`;
             });
 
-            // Detectar Docente ej. (Juan Pablo Gómez)
+            // Formato de Docente
             txt = txt.replace(/\((.*?)\)/g, `<div class="mt-1.5 text-xs text-slate-500 font-medium flex items-center gap-1">👤 $1</div>`);
             
-            // Resaltar Materia
+            // Resaltar texto principal
             txt = txt.replace(/(<\/div>|^)(.*?)(<div|$)/g, (match, p1, text, p3) => {
                 let trimmed = text.trim();
                 if (trimmed && !trimmed.startsWith('<')) {
@@ -113,55 +107,90 @@
             return txt;
         }
 
-        function renderTable(data) {
+        function renderTable(data, fields) {
+            const thead = document.getElementById('tableHead');
             const tbody = document.getElementById('tableBody');
+            
+            // Renderizar Encabezados Dinámicos
+            let headHTML = '<tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider text-xs font-semibold">';
+            fields.forEach((field, index) => {
+                const width = index === 0 ? 'min-w-[150px] sticky left-0 bg-slate-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10' : (field.toLowerCase() === 'capacidad' ? 'min-w-[80px] text-center' : 'min-w-[220px]');
+                headHTML += `<th class="p-4 ${width}">${field}</th>`;
+            });
+            headHTML += '</tr>';
+            thead.innerHTML = headHTML;
+
+            // Renderizar Cuerpo Dinámico
             tbody.innerHTML = '';
-
-            data.forEach((row, index) => {
-                // Evitar filas vacías
-                if (!row['Aula'] || row['Aula'].trim() === '') return;
-
+            data.forEach((row, rowIndex) => {
+                if (!row[fields[0]] || row[fields[0]].trim() === '') return;
+                
                 const tr = document.createElement('tr');
-                const isEven = index % 2 === 0;
-                const bgClass = isEven ? 'bg-white' : 'bg-slate-50/40';
+                const bgClass = rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50/40';
                 tr.className = `hover:bg-blue-50/50 transition-colors ${bgClass}`;
                 
-                const cap = row['Capacidad'] || '-';
-                const h09 = row['09:00-11:00'] || '';
-                const h11 = row['11:00-13:00'] || '';
-                const h13 = row['13:00-15:00'] || '';
+                let searchStr = "";
+                
+                fields.forEach((field, colIndex) => {
+                    const td = document.createElement('td');
+                    const isAula = colIndex === 0;
+                    const isCapacidad = field.toLowerCase() === 'capacidad';
+                    
+                    td.className = `p-4 border-b border-slate-100 align-top ${isAula ? 'font-bold text-slate-800 sticky left-0 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] ' + bgClass : ''} ${isCapacidad ? 'text-center' : 'min-h-[90px]'}`;
+                    
+                    let cellData = row[field] || '';
+                    searchStr += cellData + " ";
+                    
+                    if (isAula) td.innerHTML = cellData;
+                    else if (isCapacidad) td.innerHTML = `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600">${cellData || '-'}</span>`;
+                    else td.innerHTML = formatCellContent(cellData);
+                    
+                    tr.appendChild(td);
+                });
 
-                // Data para el buscador
-                const searchStr = `${row['Aula']} ${h09} ${h11} ${h13}`.toLowerCase();
-                tr.setAttribute('data-search', searchStr);
-
-                tr.innerHTML = `
-                    <td class="p-4 border-b border-slate-100 align-top font-bold text-slate-800 sticky left-0 ${bgClass} shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">${row['Aula']}</td>
-                    <td class="p-4 border-b border-slate-100 align-top text-center"><span class="px-2 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600">${cap}</span></td>
-                    <td class="p-4 border-b border-slate-100 align-top min-h-[90px]">${formatCellContent(h09)}</td>
-                    <td class="p-4 border-b border-slate-100 align-top min-h-[90px]">${formatCellContent(h11)}</td>
-                    <td class="p-4 border-b border-slate-100 align-top min-h-[90px]">${formatCellContent(h13)}</td>
-                `;
+                tr.setAttribute('data-search', searchStr.toLowerCase());
                 tbody.appendChild(tr);
             });
         }
 
-        // Inicializar lectura desde Google Sheets
-        Papa.parse(CSV_URL, {
-            download: true,
-            header: true,
-            complete: function(results) {
-                renderTable(results.data);
-                const badge = document.getElementById('statusBadge');
-                badge.className = "bg-green-50 text-green-800 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 border border-green-200";
-                badge.innerHTML = `<svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> En línea`;
-            },
-            error: function(error) {
-                console.error("Error cargando datos:", error);
-                const badge = document.getElementById('statusBadge');
-                badge.className = "bg-red-50 text-red-800 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 border border-red-200";
-                badge.innerHTML = `Error de conexión`;
-            }
+        function loadData(modality) {
+            const badge = document.getElementById('statusBadge');
+            badge.className = "bg-amber-50 text-amber-800 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 border border-amber-200";
+            badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Cargando...`;
+            
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="10" class="text-center p-8 text-slate-500">Sincronizando pestaña...</td></tr>';
+
+            Papa.parse(URLS[modality], {
+                download: true,
+                header: true,
+                complete: function(results) {
+                    currentData = results.data;
+                    currentFields = results.meta.fields;
+                    renderTable(currentData, currentFields);
+                    
+                    badge.className = "bg-green-50 text-green-800 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 border border-green-200";
+                    badge.innerHTML = `<svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> En línea`;
+                },
+                error: function(err) {
+                    badge.className = "bg-red-50 text-red-800 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 border border-red-200";
+                    badge.innerHTML = `Error de conexión`;
+                }
+            });
+        }
+
+        // Eventos de Pestañas
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.remove('border-blue-600', 'text-blue-700');
+                    b.classList.add('border-transparent', 'text-slate-500');
+                });
+                e.target.classList.remove('border-transparent', 'text-slate-500');
+                e.target.classList.add('border-blue-600', 'text-blue-700');
+                
+                document.getElementById('searchInput').value = '';
+                loadData(e.target.dataset.target);
+            });
         });
 
         // Buscador
@@ -173,6 +202,9 @@
                 row.style.display = searchContent.includes(term) ? '' : 'none';
             }
         });
+
+        // Carga inicial
+        loadData('sabados');
     </script>
 </body>
 </html>
