@@ -3,81 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tablero de Salones - UNISA 2026 (Bloque 1)</title>
+    <title>Tablero Académico - Sábados UNISA 2026</title>
+    <!-- Tailwind CSS para el diseño -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PapaParse para leer Google Sheets automáticamente -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-        }
-        /* Custom Scrollbar para la tabla en móviles */
-        .table-container::-webkit-scrollbar {
-            height: 8px;
-            width: 8px;
-        }
-        .table-container::-webkit-scrollbar-track {
-            background: #f1f5f9; 
-            border-radius: 4px;
-        }
-        .table-container::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
-            border-radius: 4px;
-        }
-        .table-container::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
-        }
-        
-        /* Animación suave para el filtrado */
-        tr {
-            transition: all 0.3s ease;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .table-container::-webkit-scrollbar { height: 8px; width: 8px; }
+        .table-container::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        tr { transition: background-color 0.2s ease; }
     </style>
 </head>
 <body class="text-slate-800 antialiased p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto">
-        
-        <!-- Header Institucional -->
-        <div class="bg-white rounded-t-xl p-6 border-b-4 border-blue-900 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+        <!-- Encabezado Institucional -->
+        <header class="bg-white rounded-t-xl p-6 border-b-4 border-blue-900 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-blue-900 tracking-tight">Matriz de Salones Sábados</h1>
-                <p class="text-slate-500 font-medium text-sm mt-1">Bloque 1 (Septiembre - Octubre 2026) • Centro de Estudios Universitarios San Agustín</p>
+                <h1 class="text-2xl font-bold text-blue-900 tracking-tight">Matriz de Aulas - Sábados (Presencial)</h1>
+                <p class="text-slate-500 font-medium text-sm mt-1">Bloque 1 (2026) • Centro de Estudios Universitarios San Agustín</p>
             </div>
-            <div class="bg-blue-50 text-blue-800 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 border border-blue-100">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
-                </svg>
-                Turno Matutino
+            <div id="statusBadge" class="bg-amber-50 text-amber-800 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 border border-amber-200">
+                <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                Sincronizando con nube...
             </div>
-        </div>
+        </header>
 
-        <div class="bg-white p-4 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+        <!-- Buscador y Leyenda -->
+        <section class="bg-white p-4 border-b border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="relative w-full sm:w-96">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                <input type="text" id="searchInput" 
-                    class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200" 
-                    placeholder="Buscar docente, grupo, aula o materia...">
+                <input type="text" id="searchInput" class="block w-full pl-4 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-shadow" placeholder="Buscar docente, grupo o materia...">
             </div>
-            
-            <!-- Leyenda de colores -->
             <div class="flex gap-3 text-xs font-medium text-slate-600 flex-wrap">
                 <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-100 border border-blue-300"></span> LAE</span>
                 <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-emerald-100 border border-emerald-300"></span> ISC</span>
                 <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-amber-100 border border-amber-300"></span> IESPRO</span>
             </div>
-        </div>
+        </section>
 
-        <div class="bg-white rounded-b-xl shadow-sm border border-slate-200 overflow-hidden">
+        <!-- Tabla -->
+        <main class="bg-white rounded-b-xl shadow-sm border border-slate-200 overflow-hidden relative">
             <div class="table-container overflow-x-auto w-full">
                 <table class="w-full text-left border-collapse" id="salonesTable">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider text-xs font-semibold">
-                            <th class="p-4 min-w-[150px] sticky left-0 bg-slate-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10">Aula / Espacio</th>
+                            <th class="p-4 min-w-[150px] sticky left-0 bg-slate-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-10">Aula</th>
                             <th class="p-4 min-w-[80px] text-center">Cupo</th>
                             <th class="p-4 min-w-[280px]">09:00 - 11:00</th>
                             <th class="p-4 min-w-[280px]">11:00 - 13:00</th>
@@ -85,135 +58,119 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-slate-100 text-sm">
-                        <!-- El contenido se inyectará vía JavaScript -->
+                        <!-- Filas inyectadas por JS -->
                     </tbody>
                 </table>
             </div>
-        </div>
-
-        <div class="mt-6 bg-blue-50 border-l-4 border-blue-600 p-4 rounded-r-lg shadow-sm">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <h3 class="text-sm font-bold text-blue-800">Aviso Académico (Modalidad Asíncrona)</h3>
-                    <p class="text-sm text-blue-700 mt-1">
-                        La materia <strong>ISC0525 – Gestión de equipos y liderazgo</strong> (Mtro. Hugo Alberto Ozuna Moreno) para los grupos <span class="inline-block px-2 py-0.5 bg-blue-200 text-blue-800 rounded text-xs font-bold">LAE24B</span> y <span class="inline-block px-2 py-0.5 bg-emerald-200 text-emerald-800 rounded text-xs font-bold">ISC24C</span> opera de manera 24/7 en el Campus Virtual.
-                    </p>
-                </div>
-            </div>
-        </div>
+        </main>
+        
+        <!-- Recordatorio Operativo -->
+        <footer class="mt-6 bg-blue-50 border-l-4 border-blue-600 p-4 rounded-r-lg shadow-sm text-sm text-blue-800">
+            <strong>Lineamiento Operativo:</strong> Si el docente asiste pero el grupo no se presenta (causas ajenas), la sesión se contabiliza como impartida. El docente deberá subir evidencias y foros al <em>Campus Virtual</em>. Aulas de Planta Baja reservadas por accesibilidad.
+        </footer>
     </div>
 
     <script>
-        // Datos centralizados de la matriz actualizados
-        const scheduleData = [
-            { room: 'Aula Sistemas', capacity: '8',  b1: '[LAE26C] ING0101 - Inglés Básico Inicial ESL (Karla Berenice López González)', b2: '[ISC25B] ISC0417 - Ecuaciones diferenciales y series (Karla Berenice López González)', b3: '[LAE26A, LAE26B] LAE0313 - Contabilidad Financiera (Juan Pablo Gómez Ruiz)' },
-            { room: 'Montessori',    capacity: '14', b1: '[ISC25B] ING0404 - Enseñanza de la segunda lengua en el idioma inglés (Samuel Guadalupe Pérez Urquín)', b2: '[LAE25A, LAE25B] LAE0522 - Administración Estratégica (Karime Esquivel Herrejón)', b3: '[ISC25A, LAE25A, LAE25B] ING0505 - Conversacional ESL (Samuel Guadalupe Pérez Urquín)' },
-            { room: 'Piaget',        capacity: '6',  b1: '[LAE26A, LAE26B] LAE0312 - Presupuestos (Alejandra Estefanía Guzmán Gutiérrez)', b2: '[ISC24A, ISC24B] ISC0945 - Gestión estratégica de proyectos (Alejandra Estefanía Guzmán Gutiérrez)', b3: '[ISC24A, ISC24B] ISC0941 - Desarrollo de aplicaciones móviles (Luis Manuel Lescieur Santiago)' },
-            { room: 'Salón Paulo Freire', capacity: '12', b1: '[LAE25A, LAE25B] LAE0521 - Logística y cadena de suministro (Juan Carlos Culej Pérez)', b2: '[LAE26A, LAE26B] ING0303 - Inglés pre-intermedio ESL (Samuel Guadalupe Pérez Urquín)', b3: '[LAE26C] LAE0102 - Entorno socioeconómico y político de México (Juan Carlos Culej Pérez)' },
-            { room: 'Salón Vigotsky',capacity: 'N/A', b1: 'IESPRO', b2: 'IESPRO', b3: 'IESPRO' },
-            { room: 'Salón B. F. Skinner',capacity: '10', b1: 'Disponible', b2: '[ISC25A] ISC0525 - Gestión de equipos y liderazgo (Hugo Alberto Ozuna Moreno)', b3: '[ISC25B] ISC0418 - Probabilidad y estadística (Hugo Alberto Ozuna Moreno)' },
-            { room: 'Salón Jerome Bruner',capacity: '12', b1: '[ISC25A] ISC0524 - Introducción a los lenguajes de programación (Luis Manuel Lescieur Santiago)', b2: '[LAE26C] LAE0101 - Introducción a la empresa (Juan Pablo Gómez Ruiz)', b3: 'Disponible' },
-            { room: 'Salón John Dewey', capacity: '8',  b1: '[ISC24A, ISC24B] ISC0942 - Inteligencia Artificial (Joaquín Román Vázquez Zúñiga)', b2: 'Disponible', b3: 'Disponible' },
-            { room: 'Laboratorio 02', capacity: 'N/A', b1: 'Disponible', b2: 'Disponible', b3: 'Disponible' },
-            { room: 'Carls Rogers',  capacity: '2',  b1: '[LAE24B] LAE0731 - Administración de la Calidad (Juan Pablo Gómez Ruiz)', b2: '[LAE24B] LAE0732 - Administración financiera (Juan Carlos Culej Pérez)', b3: '[LAE24B] LAE0734 - Marketing digital (Karime Esquivel Herrejón)' },
-            { room: 'David Ausibel', capacity: '12', b1: 'IESPRO', b2: 'IESPRO', b3: 'IESPRO' }
-        ];
+        // URL de tu Google Sheet (Publicado en la web como CSV)
+        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQTu4ojCpcx6nXbkKRjiatZ_0oDCZ4ChrdL7OBSKq8q3tK0XTgFc4844OY3v7w5dNnACNOiO8pl57e4/pub?output=csv";
 
+        // Formateador visual
         function formatCellContent(content) {
-            if (content === 'Disponible') {
-                return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">Libre / Disponible</span>`;
+            if (!content || content.trim() === '') return '<span class="text-slate-300">-</span>';
+            let txt = content.trim();
+
+            if (txt === 'Disponible') {
+                return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200 shadow-sm">Libre / Disponible</span>`;
             }
-            if (content === 'IESPRO') {
+            if (txt === 'IESPRO') {
                 return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200 shadow-sm">Uso Exclusivo IESPRO</span>`;
             }
 
-            let html = content;
-
-            // 1. Extraer y formatear grupos ej: [LAE26A, LAE26B] o [LAE26A - LAE26B]
-            const groupRegex = /\[(.*?)\]/g;
-            html = html.replace(groupRegex, (match, groupsStr) => {
-                // Separar por coma o por guion medio
+            // Detectar Grupos ej. [LAE26C] o [LAE25A - LAE25B]
+            txt = txt.replace(/\[(.*?)\]/g, (match, groupsStr) => {
                 const groups = groupsStr.split(/,| - /).map(g => g.trim());
                 const badges = groups.map(g => {
-                    let colorClass = 'bg-gray-100 text-gray-800 border-gray-200'; // Default
-                    if (g.startsWith('LAE')) colorClass = 'bg-blue-100 text-blue-800 border-blue-200';
-                    else if (g.startsWith('ISC')) colorClass = 'bg-emerald-100 text-emerald-800 border-emerald-200';
-                    
-                    return `<span class="inline-block px-2 py-0.5 mr-1 mb-1 rounded text-xs font-bold border ${colorClass}">${g}</span>`;
+                    let bgClass = 'bg-gray-100 text-gray-800 border-gray-200';
+                    if (g.startsWith('LAE')) bgClass = 'bg-blue-100 text-blue-800 border-blue-200';
+                    else if (g.startsWith('ISC')) bgClass = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+                    return `<span class="inline-block px-2 py-0.5 mr-1 mb-1 rounded text-xs font-bold border ${bgClass}">${g}</span>`;
                 }).join('');
                 return `<div class="mb-1">${badges}</div>`;
             });
 
-            // 2. Extraer y formatear nombre del profesor ej: (Juan Pérez)
-            const teacherRegex = /\((.*?)\)/g;
-            html = html.replace(teacherRegex, (match, teacherName) => {
-                return `<div class="mt-1.5 text-xs text-slate-500 font-medium flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                            ${teacherName}
-                        </div>`;
-            });
-
-            // 3. Resaltar la materia
-            html = html.replace(/(<\/div>|^)(.*?)(<div|$)/g, (match, p1, text, p3) => {
+            // Detectar Docente ej. (Juan Pablo Gómez)
+            txt = txt.replace(/\((.*?)\)/g, `<div class="mt-1.5 text-xs text-slate-500 font-medium flex items-center gap-1">👤 $1</div>`);
+            
+            // Resaltar Materia
+            txt = txt.replace(/(<\/div>|^)(.*?)(<div|$)/g, (match, p1, text, p3) => {
                 let trimmed = text.trim();
-                if (trimmed && trimmed !== '-' && !trimmed.startsWith('<')) {
+                if (trimmed && !trimmed.startsWith('<')) {
                      return `${p1}<div class="text-sm font-semibold text-slate-700 leading-snug my-0.5">${trimmed}</div>${p3}`;
                 }
                 return match;
             });
 
-            return html;
+            return txt;
         }
 
-        const tableBody = document.getElementById('tableBody');
-        const searchInput = document.getElementById('searchInput');
-
         function renderTable(data) {
-            tableBody.innerHTML = '';
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
             data.forEach((row, index) => {
+                // Evitar filas vacías
+                if (!row['Aula'] || row['Aula'].trim() === '') return;
+
                 const tr = document.createElement('tr');
-                tr.className = `hover:bg-blue-50/50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`;
+                const isEven = index % 2 === 0;
+                const bgClass = isEven ? 'bg-white' : 'bg-slate-50/40';
+                tr.className = `hover:bg-blue-50/50 transition-colors ${bgClass}`;
                 
-                const searchText = `${row.room} ${row.b1} ${row.b2} ${row.b3}`.toLowerCase();
-                tr.setAttribute('data-search', searchText);
+                const cap = row['Capacidad'] || '-';
+                const h09 = row['09:00-11:00'] || '';
+                const h11 = row['11:00-13:00'] || '';
+                const h13 = row['13:00-15:00'] || '';
+
+                // Data para el buscador
+                const searchStr = `${row['Aula']} ${h09} ${h11} ${h13}`.toLowerCase();
+                tr.setAttribute('data-search', searchStr);
 
                 tr.innerHTML = `
-                    <td class="p-4 border-b border-slate-100 align-top sticky left-0 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50'} shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] font-bold text-slate-800">
-                        ${row.room}
-                    </td>
-                    <td class="p-4 border-b border-slate-100 align-top text-center">
-                        <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600">
-                            ${row.capacity}
-                        </span>
-                    </td>
-                    <td class="p-4 border-b border-slate-100 align-top min-h-[100px]">${formatCellContent(row.b1)}</td>
-                    <td class="p-4 border-b border-slate-100 align-top min-h-[100px]">${formatCellContent(row.b2)}</td>
-                    <td class="p-4 border-b border-slate-100 align-top min-h-[100px]">${formatCellContent(row.b3)}</td>
+                    <td class="p-4 border-b border-slate-100 align-top font-bold text-slate-800 sticky left-0 ${bgClass} shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">${row['Aula']}</td>
+                    <td class="p-4 border-b border-slate-100 align-top text-center"><span class="px-2 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-600">${cap}</span></td>
+                    <td class="p-4 border-b border-slate-100 align-top min-h-[90px]">${formatCellContent(h09)}</td>
+                    <td class="p-4 border-b border-slate-100 align-top min-h-[90px]">${formatCellContent(h11)}</td>
+                    <td class="p-4 border-b border-slate-100 align-top min-h-[90px]">${formatCellContent(h13)}</td>
                 `;
-                tableBody.appendChild(tr);
+                tbody.appendChild(tr);
             });
         }
 
-        // Renderizado inicial
-        renderTable(scheduleData);
+        // Inicializar lectura desde Google Sheets
+        Papa.parse(CSV_URL, {
+            download: true,
+            header: true,
+            complete: function(results) {
+                renderTable(results.data);
+                const badge = document.getElementById('statusBadge');
+                badge.className = "bg-green-50 text-green-800 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 border border-green-200";
+                badge.innerHTML = `<svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> En línea`;
+            },
+            error: function(error) {
+                console.error("Error cargando datos:", error);
+                const badge = document.getElementById('statusBadge');
+                badge.className = "bg-red-50 text-red-800 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 border border-red-200";
+                badge.innerHTML = `Error de conexión`;
+            }
+        });
 
-        // Lógica de búsqueda
-        searchInput.addEventListener('keyup', (e) => {
+        // Buscador
+        document.getElementById('searchInput').addEventListener('keyup', (e) => {
             const term = e.target.value.toLowerCase().trim();
-            const rows = tableBody.getElementsByTagName('tr');
-
+            const rows = document.getElementById('tableBody').getElementsByTagName('tr');
             for (let row of rows) {
                 const searchContent = row.getAttribute('data-search');
-                if (searchContent.includes(term)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+                row.style.display = searchContent.includes(term) ? '' : 'none';
             }
         });
     </script>
